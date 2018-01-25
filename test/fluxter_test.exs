@@ -119,6 +119,15 @@ defmodule FluxterTest do
     TestFluxter.write("foo", [bar: "baz", qux: "baz"], 0)
     assert_receive {:echo, "foo,bar=baz,qux=baz value=0i"}
 
+    TestFluxter.write(
+      "foo",
+      [bar: "baz", qux: "baz"],
+      0,
+      DateTime.from_unix!(1_415_521_167_028_459, :microseconds)
+    )
+
+    assert_receive {:echo, "foo,bar=baz,qux=baz value=0i 1415521167028459"}
+
     refute_receive _any
   end
 
