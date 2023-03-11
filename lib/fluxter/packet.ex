@@ -27,22 +27,16 @@ defmodule Fluxter.Packet do
       ] ++ anc_data_part
   end
 
-  def build(header, name, tags, fields, unix_timestamp_ms) do
+  def build(header, name, tags, fields, timestamp_nano_secs) do
     tags = encode_tags(tags)
     fields = encode_fields(fields)
 
-    case is_nil(unix_timestamp_ms) do
+    case is_nil(timestamp_nano_secs) do
       true ->
         [header, encode_key(name), tags, ?\s, fields]
 
       false ->
-        # Convert time to nanoseconds, which is the precision influxdb uses
-        unix_timestamp_nano_secs =
-          unix_timestamp_ms
-          |> Kernel.*(1_000_000)
-          |> Integer.to_string()
-
-        [header, encode_key(name), tags, ?\s, fields, ?\s, unix_timestamp_nano_secs]
+        [header, encode_key(name), tags, ?\s, fields, ?\s, Integer.to_string(timestamp_nano_secs)]
     end
   end
 
